@@ -90,9 +90,36 @@ The final dataset powers analytics on:
              │  - Hotspot & outcome insights      │
              │  - Staffing vs crime correlations  │
              └────────────────────────────────────┘
+---
 
+## 🧹 Crime Analytics ETL Pipeline (R)
 
+This project includes an R-based **ETL pipeline** that prepares UK crime data for loading into the Crime Data Warehouse.
 
+Raw data from multiple monthly CSV files and a secondary police strength dataset are:
+
+### 🔄 Extracted
+- All monthly crime CSV files are read from a folder using a custom `merge_csv_files()` function (`data.table::fread` + `rbindlist`).  
+- Police force strength data is loaded from a separate CSV file and standardised.
+
+### 🧪 Transformed
+The script performs several transformation and data quality steps:
+
+- **Column selection & renaming** – keep only relevant fields such as `Crime ID`, `Month`, `LSOA code`, `LSOA name`, `Location`, `Crime type`, and `Last outcome category`, then rename them to analysis-friendly names (`Crime_type`, `LSOA_name`, `Last_outcome_category`, etc.).
+- **Missing value handling** – remove records with missing longitude and latitude, and inspect NA counts across all variables.
+- **Business rule application** – map `Crime type = "Anti-social behaviour"` to a clearer outcome label `"Behavioral issues"`.
+- **Date standardisation** – convert `Month` to `Date` in `"YYYY-MM"` format, with derived `Year` and `Month` fields.
+- **Geospatial & contextual enrichment** – join crime data with `Police_Force_Strength` (police officer, staff and PCSO strength) on the standardised `Date` field.
+
+The final transformed dataset is saved as `Crime_df`.
+
+### 🗄 Loaded
+The curated `Crime_df` table is then:
+
+- Exported to a clean CSV for archive and validation.
+- Loaded into **PostgreSQL** using `DBI` + `RPostgres` as a staging table:
+
+---
 
 ## 🏛 Crime Analytics Data Warehouse (SQL)
 
