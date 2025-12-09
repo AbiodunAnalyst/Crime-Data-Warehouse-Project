@@ -42,29 +42,6 @@ The final dataset powers analytics on:
 
 ---
 
-# 🔄 **ETL Pipeline Summary (R Script)**
-
-The ETL script performs:
-
-### 1️⃣ **Extract**
-- Reads **all monthly crime CSV files** from the data folder  
-- Merges them into a single unified dataset using `data.table::fread()`  
-- Loads police force strength data and aligns date formats  
-
-### 2️⃣ **Transform**
-- Handles missing values (coordinates, empty categories)  
-- Cleans and standardises column naming  
-- Converts `"YYYY-MM"` to year & month fields  
-- Applies business rule:
-  - If *Crime Type = Anti-social behaviour* → Outcome = "Behavioral issues"  
-- Joins crime data with police strength metrics  
-- Produces a **clean structured dataset (`Crime_df`)**  
-
-### 3️⃣ **Load**
-Loads the final dataset into **PostgreSQL** as staging table:
-
----
-
 ## 📦 End-to-End Crime Analytics Pipeline (ETL → Warehouse → BI)
 
 ---
