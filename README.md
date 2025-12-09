@@ -1,3 +1,74 @@
+<h1 align="center">🏛 Crime Data Warehouse & Analytics Pipeline</h1>
+
+<p align="center">
+  <strong>R ETL • Dimensional Modelling • PostgreSQL Warehouse • Data Quality Engineering • BI-Ready Fact Tables</strong>
+</p>
+
+<p align="center">
+  End-to-end data warehouse pipeline built for the UK Crime Dataset, featuring automated ETL in R, enriched data modelling, 
+  and warehouse-ready fact/dimension tables powering advanced crime analytics. 
+  Suitable for UK Global Talent Visa (Technical Path) evidence.
+</p>
+
+<p align="center">
+
+  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Data%20Warehouse-Kimball-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/ETL%20Pipeline-R%20Script-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/BI%20Ready-Power%20BI-yellow?style=for-the-badge&logo=powerbi" />
+
+</p>
+
+---
+
+<p align="center">
+  <em>This project demonstrates enterprise-level ETL design, dimensional modelling, and warehouse engineering for large-scale public safety analytics.</em>
+</p>
+
+---
+
+# 📌 Project Overview
+
+This project implements a **Crime Analytics Data Warehouse** using R for ETL and PostgreSQL for storage.  
+The system ingests **over 2.2 million UK crime records**, enriches them with **police force strength data**, validates quality, and produces **clean staging data** for a Kimball-style warehouse schema.
+
+The final dataset powers analytics on:
+
+- Crime distribution by geography  
+- Crime type trends over time  
+- Crime outcomes and resolution rates  
+- Relationship between crime and police staffing  
+
+---
+
+
+
+---
+
+# 🔄 **ETL Pipeline Summary (R Script)**
+
+The ETL script performs:
+
+### 1️⃣ **Extract**
+- Reads **all monthly crime CSV files** from the data folder  
+- Merges them into a single unified dataset using `data.table::fread()`  
+- Loads police force strength data and aligns date formats  
+
+### 2️⃣ **Transform**
+- Handles missing values (coordinates, empty categories)  
+- Cleans and standardises column naming  
+- Converts `"YYYY-MM"` to year & month fields  
+- Applies business rule:
+  - If *Crime Type = Anti-social behaviour* → Outcome = "Behavioral issues"  
+- Joins crime data with police strength metrics  
+- Produces a **clean structured dataset (`Crime_df`)**  
+
+### 3️⃣ **Load**
+Loads the final dataset into **PostgreSQL** as staging table:
+
+
+
 ## 🏛 Crime Analytics Data Warehouse (SQL)
 
 This project implements a Kimball-style **data warehouse** for UK crime data using SQL.
