@@ -1,7 +1,7 @@
 <h1 align="center">🏛 Crime Data Warehouse & Analytics Pipeline</h1>
 
 <p align="center">
-  <strong>R ETL • Dimensional Modelling • PostgreSQL Warehouse • Data Quality Engineering • BI-Ready Fact Tables</strong>
+  <strong>R ETL • Dimensional Modelling • PostgreSQL Warehouse • Data Quality Engineering • BI-Ready Fact Tables</strong> </h1>
 </p>
 
 <p align="center">
