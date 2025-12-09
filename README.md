@@ -42,10 +42,6 @@ The final dataset powers analytics on:
 
 ---
 
-
-
----
-
 # 🔄 **ETL Pipeline Summary (R Script)**
 
 The ETL script performs:
@@ -66,6 +62,59 @@ The ETL script performs:
 
 ### 3️⃣ **Load**
 Loads the final dataset into **PostgreSQL** as staging table:
+
+---
+
+## 📦 End-to-End Crime Analytics Pipeline (ETL → Warehouse → BI)
+
+---
+
+             ┌────────────────────────────────────┐
+             │      Raw Crime Data Files          │
+             │  (Monthly CSVs from data portal)   │
+             └───────────────────┬────────────────┘
+                                 │
+                                 ▼
+             ┌────────────────────────────────────┐
+             │     R ETL Pipeline (crime_df)      │
+             │  - File ingestion & merging        │
+             │  - Data cleaning & NA handling     │
+             │  - Business rules (behavioural)    │
+             │  - Date parsing (YYYY-MM)          │
+             │  - Join with Police Strength data  │
+             └───────────────────┬────────────────┘
+                                 │
+                                 ▼
+             ┌────────────────────────────────────┐
+             │     PostgreSQL Staging Table       │
+             │              crime_df              │
+             │  - Clean, enriched crime records   │
+             │  - Ready for dimensional loading   │
+             └───────────────────┬────────────────┘
+                                 │
+                                 ▼
+             ┌────────────────────────────────────┐
+             │   Data Warehouse (Star Schema)     │
+             │  - dim_crime_type                  │
+             │  - dim_lsoa                        │
+             │  - dim_location                    │
+             │  - dim_outcome                     │
+             │  - dim_date                        │
+             │  - fact_crime_num                  │
+             │  - fact_crime_count                │
+             │  - fact_crime_resolution           │
+             │  - fact_crime_time                 │
+             └───────────────────┬────────────────┘
+                                 │
+                                 ▼
+             ┌────────────────────────────────────┐
+             │   BI & Analytics Layer             │
+             │  - Power BI / SQL reporting        │
+             │  - Crime trend analysis            │
+             │  - Hotspot & outcome insights      │
+             │  - Staffing vs crime correlations  │
+             └────────────────────────────────────┘
+
 
 
 
