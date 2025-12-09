@@ -152,5 +152,3 @@ Analysts and BI tools (e.g. Power BI, Tableau) can now easily answer questions l
 - Which areas show the highest **crime resolution rates** by outcome category?  
 - On which **day of the week** do specific crime types peak?  
 - Is there any relationship between **police strength** and recorded crime volume?
-
-This project showcases my ability to design and implement a **dimensional model**, generate a **date dimension**, and build **SQL-based ETL** for a real analytics use case.
