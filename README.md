@@ -3,7 +3,6 @@
 <p align="center">
   <strong>R ETL • Dimensional Modelling • PostgreSQL Warehouse • Data Quality Engineering • BI-Ready Fact Tables</strong>
 </p>
----
 <p align="center">
   End-to-end data warehouse pipeline built for the UK Crime Dataset, featuring automated ETL in R, enriched data modelling, 
   and warehouse-ready fact/dimension tables powering advanced crime analytics. 
