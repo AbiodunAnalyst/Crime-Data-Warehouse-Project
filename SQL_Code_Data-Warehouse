@@ -300,7 +300,7 @@ GROUP BY
     cd.last_outcome_category;
 
 
-## fact_crime_occurring_time table
+## fact_occurring_time table
 
 CREATE TABLE fact_crime_occurring_time (
     date_id                  INT,
