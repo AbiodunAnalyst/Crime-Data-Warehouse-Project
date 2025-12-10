@@ -6,7 +6,6 @@
 <p align="center">
   End-to-end data warehouse pipeline built for the UK Crime Dataset, featuring automated ETL in R, enriched data modelling, 
   and warehouse-ready fact/dimension tables powering advanced crime analytics. 
-  Suitable for UK Global Talent Visa (Technical Path) evidence.
 </p>
 
 <p align="center">
