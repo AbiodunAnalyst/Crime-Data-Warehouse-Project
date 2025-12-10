@@ -142,6 +142,14 @@ Each fact table represents a different analytical “lens” on crime:
 
 All fact tables use **foreign keys** back to the dimension tables (`dim_crime_type`, `dim_LSOAName`, `dim_Location`, `dim_date`, `dim_Outcome`), forming a classic star schema.
 
+---
+
+**ERP Diagram**
+
+![](crimeerpd.jpg)
+
+---
+
 ### 🧠 What this enables
 
 Analysts and BI tools (e.g. Power BI, Tableau) can now easily answer questions like:
