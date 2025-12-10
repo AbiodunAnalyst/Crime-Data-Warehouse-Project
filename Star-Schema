@@ -20,8 +20,6 @@ The warehouse consists of:
 - `fact_crime_resolution` — crime outcomes by date and type  
 - `fact_crime_time` — crimes by day-of-week and location  
 
-A fully cleaned and corrected warehouse SQL script (`warehouse_schema.sql`) is provided.
-
 ---
 
 # 🌐 **Crime Data Warehouse Star Schema (Mermaid Diagram)**
