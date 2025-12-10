@@ -1,0 +1,383 @@
+# Creating the dimension table
+
+# dim_crime_typ table
+
+CREATE TABLE dim_crime_type (
+    crime_type_id INT PRIMARY KEY,
+    crime_type    VARCHAR(100) NOT NULL
+);
+
+INSERT INTO dim_crime_type (crime_type_id, crime_type)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY crime_type) AS crime_type_id,
+    crime_type
+FROM (
+    SELECT DISTINCT crime_type
+    FROM Crime_df
+    WHERE crime_type IS NOT NULL
+) cd;
+
+
+
+# dim_LSOAName table
+
+CREATE TABLE dim_LSOAName (
+    LSOA_id   INT PRIMARY KEY,
+    LSOA_name VARCHAR(100) NOT NULL,
+    LSOA_code VARCHAR(50)
+);
+
+INSERT INTO dim_LSOAName (LSOA_id, LSOA_name, LSOA_code)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY LSOA_name) AS LSOA_id,
+    LSOA_name,
+    LSOA_code
+FROM (
+    SELECT DISTINCT LSOA_name, LSOA_code
+    FROM Crime_df
+    WHERE LSOA_name IS NOT NULL
+) cd;
+
+
+# dim_Location table
+
+CREATE TABLE dim_Location (
+    Location_id INT PRIMARY KEY,
+    Location    VARCHAR(100)
+);
+
+INSERT INTO dim_Location (Location_id, Location)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY Location) AS Location_id,
+    Location
+FROM (
+    SELECT DISTINCT Location
+    FROM Crime_df
+) cd;
+
+
+
+# dim_Outcome table
+
+CREATE TABLE dim_Outcome (
+    Outcome_id            INT PRIMARY KEY,
+    Last_outcome_category VARCHAR(200)
+);
+
+INSERT INTO dim_Outcome (Outcome_id, Last_outcome_category)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY Last_outcome_category) AS Outcome_id,
+    Last_outcome_category
+FROM (
+    SELECT DISTINCT Last_outcome_category
+    FROM Crime_df
+    WHERE Last_outcome_category IS NOT NULL
+) cd;
+
+
+
+# dim_date table
+
+CREATE TABLE dim_date (
+    date_id      INT PRIMARY KEY,
+    full_date    DATE NOT NULL,
+    day_of_week  VARCHAR(10),
+    day_of_month INT,
+    day_of_year  INT,
+    week_of_year INT,
+    month_name   VARCHAR(20),
+    month_number INT,
+    quarter      INT,
+    year         INT,
+    year_month   VARCHAR(7)  -- YYYY-MM
+);
+
+WITH RECURSIVE dates AS (
+    SELECT DATE('2020-01-01') AS full_date
+    UNION ALL
+    SELECT DATE_ADD(full_date, INTERVAL 1 DAY)
+    FROM dates
+    WHERE full_date < DATE('2025-12-31')
+)
+INSERT INTO dim_date (
+    date_id, full_date, day_of_week, day_of_month, day_of_year,
+    week_of_year, month_name, month_number, quarter, year, year_month
+)
+SELECT
+    DATE_FORMAT(full_date, '%Y%m%d') AS date_id,
+    full_date,
+    DAYNAME(full_date)                AS day_of_week,
+    DAY(full_date)                    AS day_of_month,
+    DAYOFYEAR(full_date)              AS day_of_year,
+    WEEK(full_date, 3)                AS week_of_year,   -- ISO-style week, if you like
+    MONTHNAME(full_date)              AS month_name,
+    MONTH(full_date)                  AS month_number,
+    QUARTER(full_date)                AS quarter,
+    YEAR(full_date)                   AS year,
+    DATE_FORMAT(full_date, '%Y-%m')   AS year_month
+FROM dates;
+
+
+# Creating the fact table
+
+# fact_Crime_Num
+
+CREATE TABLE fact_Crime_Num (
+    date_id               INT,
+    Year                  INT,
+    Month_number          INT,
+    LSOA_id               INT,
+    LSOA_name             VARCHAR(100),
+    Location_id           INT,
+    Location              VARCHAR(100),
+    Longitude             DOUBLE,
+    Latitude              DOUBLE,
+    Police_Officer_Strength INT,
+    Police_Staff_Strength   INT,
+    PCSO_Strength           INT,
+    crime_type_id         INT,
+    crime_type            VARCHAR(100),
+    number_of_crime       INT,
+    CONSTRAINT pk_fact_Crime_Num PRIMARY KEY (date_id, LSOA_id, Location_id, crime_type_id),
+    CONSTRAINT fk_factCrimeNum_crime_type
+        FOREIGN KEY (crime_type_id) REFERENCES dim_crime_type (crime_type_id),
+    CONSTRAINT fk_factCrimeNum_LSOA
+        FOREIGN KEY (LSOA_id) REFERENCES dim_LSOAName (LSOA_id),
+    CONSTRAINT fk_factCrimeNum_location
+        FOREIGN KEY (Location_id) REFERENCES dim_Location (Location_id),
+    CONSTRAINT fk_factCrimeNum_date
+        FOREIGN KEY (date_id) REFERENCES dim_date (date_id)
+);
+
+INSERT INTO fact_Crime_Num (
+    date_id, Year, Month_number,
+    LSOA_id, LSOA_name,
+    Location_id, Location,
+    Longitude, Latitude,
+    Police_Officer_Strength,
+    Police_Staff_Strength,
+    PCSO_Strength,
+    crime_type_id, crime_type,
+    number_of_crime
+)
+SELECT
+    MIN(dt.date_id) AS date_id,           
+    cd.Year,
+    cd.Month_number,
+    ln.LSOA_id,
+    cd.LSOA_name,
+    lo.Location_id,
+    cd.Location,
+    cd.Longitude,
+    cd.Latitude,
+    cd.Police_Officer_Strength,
+    cd.Police_Staff_Strength,
+    cd.PCSO_Strength,
+    ct.crime_type_id,
+    cd.crime_type,
+    COUNT(*)                               AS number_of_crime
+FROM Crime_df cd
+JOIN dim_crime_type  ct ON cd.crime_type  = ct.crime_type
+JOIN dim_LSOAName    ln ON cd.LSOA_name   = ln.LSOA_name
+JOIN dim_Location    lo ON cd.Location    = lo.Location
+JOIN dim_date        dt ON cd.Year        = dt.year
+                       AND cd.Month_number = dt.month_number
+GROUP BY
+    cd.Year,
+    cd.Month_number,
+    ln.LSOA_id,
+    cd.LSOA_name,
+    lo.Location_id,
+    cd.Location,
+    cd.Longitude,
+    cd.Latitude,
+    cd.Police_Officer_Strength,
+    cd.Police_Staff_Strength,
+    cd.PCSO_Strength,
+    ct.crime_type_id,
+    cd.crime_type;
+
+
+# fact_Resolution
+
+
+CREATE TABLE fact_Resolution (
+    date_id                INT,
+    Year                   INT,
+    Month_number           INT,
+    crime_type_id          INT,
+    crime_type             VARCHAR(100),
+    LSOA_id                INT,
+    LSOA_name              VARCHAR(100),
+    Location_id            INT,
+    Location               VARCHAR(100),
+    Longitude              DOUBLE,
+    Latitude               DOUBLE,
+    Police_Officer_Strength INT,
+    Police_Staff_Strength   INT,
+    PCSO_Strength           INT,
+    Outcome_id             INT,
+    Last_outcome_category  VARCHAR(200),
+    number_of_Resolution   INT,
+    CONSTRAINT fk_factRes_crime_type
+        FOREIGN KEY (crime_type_id) REFERENCES dim_crime_type (crime_type_id),
+    CONSTRAINT fk_factRes_LSOA
+        FOREIGN KEY (LSOA_id) REFERENCES dim_LSOAName (LSOA_id),
+    CONSTRAINT fk_factRes_location
+        FOREIGN KEY (Location_id) REFERENCES dim_Location (Location_id),
+    CONSTRAINT fk_factRes_outcome
+        FOREIGN KEY (Outcome_id) REFERENCES dim_Outcome (Outcome_id),
+    CONSTRAINT fk_factRes_date
+        FOREIGN KEY (date_id) REFERENCES dim_date (date_id)
+);
+
+INSERT INTO fact_Resolution (
+    date_id, Year, Month_number,
+    crime_type_id, crime_type,
+    LSOA_id, LSOA_name,
+    Location_id, Location,
+    Longitude, Latitude,
+    Police_Officer_Strength,
+    Police_Staff_Strength,
+    PCSO_Strength,
+    Outcome_id, Last_outcome_category,
+    number_of_Resolution
+)
+SELECT
+    MIN(dt.date_id)                     AS date_id,
+    cd.Year,
+    cd.Month_number,
+    ct.crime_type_id,
+    cd.crime_type,
+    ln.LSOA_id,
+    cd.LSOA_name,
+    lo.Location_id,
+    cd.Location,
+    cd.Longitude,
+    cd.Latitude,
+    cd.Police_Officer_Strength,
+    cd.Police_Staff_Strength,
+    cd.PCSO_Strength,
+    oc.Outcome_id,
+    cd.Last_outcome_category,
+    COUNT(*)                            AS number_of_Resolution
+FROM Crime_df cd
+JOIN dim_crime_type  ct ON cd.crime_type            = ct.crime_type
+JOIN dim_LSOAName    ln ON cd.LSOA_name             = ln.LSOA_name
+JOIN dim_Location    lo ON cd.Location              = lo.Location
+JOIN dim_date        dt ON cd.Year                  = dt.year
+                       AND cd.Month_number          = dt.month_number
+JOIN dim_Outcome     oc ON cd.Last_outcome_category = oc.Last_outcome_category
+GROUP BY
+    cd.Year,
+    cd.Month_number,
+    ct.crime_type_id,
+    cd.crime_type,
+    ln.LSOA_id,
+    cd.LSOA_name,
+    lo.Location_id,
+    cd.Location,
+    cd.Longitude,
+    cd.Latitude,
+    cd.Police_Officer_Strength,
+    cd.Police_Staff_Strength,
+    cd.PCSO_Strength,
+    oc.Outcome_id,
+    cd.Last_outcome_category;
+
+
+# fact_Crime_Occurring_Time
+
+CREATE TABLE fact_Crime_Occurring_Time (
+    date_id               INT,
+    Year                  INT,
+    Month_number          INT,
+    crime_type_id         INT,
+    crime_type            VARCHAR(100),
+    LSOA_id               INT,
+    LSOA_name             VARCHAR(100),
+    Location_id           INT,
+    Location              VARCHAR(100),
+    Longitude             DOUBLE,
+    Latitude              DOUBLE,
+    day_of_week           VARCHAR(10),
+    number_of_crime_occuring INT,
+    CONSTRAINT fk_factCOT_crime_type
+        FOREIGN KEY (crime_type_id) REFERENCES dim_crime_type (crime_type_id),
+    CONSTRAINT fk_factCOT_LSOA
+        FOREIGN KEY (LSOA_id) REFERENCES dim_LSOAName (LSOA_id),
+    CONSTRAINT fk_factCOT_location
+        FOREIGN KEY (Location_id) REFERENCES dim_Location (Location_id),
+    CONSTRAINT fk_factCOT_date
+        FOREIGN KEY (date_id) REFERENCES dim_date (date_id)
+);
+
+INSERT INTO fact_Crime_Occurring_Time (
+    date_id,
+    Year,
+    Month_number,
+    crime_type_id,
+    crime_type,
+    LSOA_id,
+    LSOA_name,
+    Location_id,
+    Location,
+    Longitude,
+    Latitude,
+    day_of_week,
+    number_of_crime_occuring
+)
+SELECT
+    dt.date_id,
+    dt.year       AS Year,
+    dt.month_number AS Month_number,
+    ct.crime_type_id,
+    cd.crime_type,
+    ln.LSOA_id,
+    cd.LSOA_name,
+    lo.Location_id,
+    cd.Location,
+    cd.Longitude,
+    cd.Latitude,
+    dt.day_of_week,
+    COUNT(*) AS number_of_crime_occuring
+FROM Crime_df cd
+JOIN dim_crime_type  ct ON cd.crime_type  = ct.crime_type
+JOIN dim_LSOAName    ln ON cd.LSOA_name   = ln.LSOA_name
+JOIN dim_Location    lo ON cd.Location    = lo.Location
+JOIN dim_date        dt ON cd.Year        = dt.year
+                       AND cd.Month_number = dt.month_number
+-- If you later have an exact date column cd.full_date, change join to:
+-- JOIN dim_date dt ON cd.full_date = dt.full_date
+GROUP BY
+    dt.date_id,
+    dt.year,
+    dt.month_number,
+    ct.crime_type_id,
+    cd.crime_type,
+    ln.LSOA_id,
+    cd.LSOA_name,
+    lo.Location_id,
+    cd.Location,
+    cd.Longitude,
+    cd.Latitude,
+    dt.day_of_week;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
