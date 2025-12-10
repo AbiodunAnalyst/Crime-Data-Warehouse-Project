@@ -374,8 +374,76 @@ GROUP BY
     cd.latitude,
     d.day_of_week;
 
+## fact_crime_count table
 
+CREATE TABLE fact_crime_count (
+    date_id        INT,
+    year           INT,
+    month_number   INT,
+    lsoa_id        INT,
+    lsoa_name      VARCHAR(100),
+    location_id    INT,
+    location       VARCHAR(100),
+    longitude      DOUBLE PRECISION,
+    latitude       DOUBLE PRECISION,
+    crime_type_id  INT,
+    crime_type     VARCHAR(100),
+    number_of_crime INT,
+    CONSTRAINT pk_fact_crime_count PRIMARY KEY (date_id, lsoa_id, location_id, crime_type_id),
+    CONSTRAINT fk_fact_cc_date
+        FOREIGN KEY (date_id) REFERENCES dim_date (date_id),
+    CONSTRAINT fk_fact_cc_lsoa
+        FOREIGN KEY (lsoa_id) REFERENCES dim_lsoaname (lsoa_id),
+    CONSTRAINT fk_fact_cc_location
+        FOREIGN KEY (location_id) REFERENCES dim_location (location_id),
+    CONSTRAINT fk_fact_cc_crime_type
+        FOREIGN KEY (crime_type_id) REFERENCES dim_crime_type (crime_type_id)
+);
 
+INSERT INTO fact_crime_count (
+    date_id,
+    year,
+    month_number,
+    lsoa_id,
+    lsoa_name,
+    location_id,
+    location,
+    longitude,
+    latitude,
+    crime_type_id,
+    crime_type,
+    number_of_crime
+)
+SELECT
+    d.date_id,
+    EXTRACT(YEAR FROM cd.crime_date)::INT  AS year,
+    EXTRACT(MONTH FROM cd.crime_date)::INT AS month_number,
+    l.lsoa_id,
+    cd.lsoa_name,
+    loc.location_id,
+    cd.location,
+    cd.longitude,
+    cd.latitude,
+    ct.crime_type_id,
+    cd.crime_type,
+    COUNT(*) AS number_of_crime
+FROM crime_df cd
+JOIN dim_date      d   ON cd.crime_date = d.full_date
+JOIN dim_crime_type ct ON cd.crime_type = ct.crime_type
+JOIN dim_lsoaname   l  ON cd.lsoa_name  = l.lsoa_name
+JOIN dim_location   loc ON cd.location  = loc.location
+GROUP BY
+    d.date_id,
+    EXTRACT(YEAR FROM cd.crime_date),
+    EXTRACT(MONTH FROM cd.crime_date),
+    l.lsoa_id,
+    cd.lsoa_name,
+    loc.location_id,
+    cd.location,
+    cd.longitude,
+    cd.latitude,
+    ct.crime_type_id,
+    cd.crime_type;
 
 
 
