@@ -71,7 +71,7 @@ The final dataset powers analytics on:
              ┌────────────────────────────────────┐
              │   Data Warehouse (Star Schema)     │
              │  - dim_crime_type                  │
-             │  - dim_lsoa                        │
+             │  - dim_lsoaname                        │
              │  - dim_location                    │
              │  - dim_outcome                     │
              │  - dim_date                        │
@@ -127,7 +127,7 @@ Source data from a staging table (`Crime_df`) is transformed into:
 
 ### 🔹 Dimension Tables
 - `dim_crime_type` – types of crime (e.g. burglary, robbery, violence)  
-- `dim_LSOAName` – LSOA names and codes for geographic analysis  
+- `dim_lsoaname` – LSOA names and codes for geographic analysis  
 - `dim_Location` – free-text location descriptions  
 - `dim_Outcome` – last outcome category (e.g. "Under investigation", "No further action")  
 - `dim_date` – full calendar date dimension (day, month, quarter, year, year_month)
@@ -138,9 +138,9 @@ Each fact table represents a different analytical “lens” on crime:
 - `fact_Crime_Num` – number of crimes by date, area, location, type and police strength  
 - `fact_Crime_Count` – alternative crime count grain by date, LSOA, location and type  
 - `fact_Resolution` – number of resolved crimes by outcome and crime type  
-- `fact_occuring_Time` – crime counts by day of week and location
+- `fact_occurring_Time` – crime counts by day of week and location
 
-All fact tables use **foreign keys** back to the dimension tables (`dim_crime_type`, `dim_LSOAName`, `dim_Location`, `dim_date`, `dim_Outcome`), forming a classic star schema.
+All fact tables use **foreign keys** back to the dimension tables (`dim_crime_type`, `dim_lsoaname`, `dim_Location`, `dim_date`, `dim_Outcome`), forming a classic star schema.
 
 ---
 
