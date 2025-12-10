@@ -22,10 +22,9 @@ The warehouse consists of:
 
 ---
 
-# 🌐 **Crime Data Warehouse Star Schema (Mermaid Diagram)**
+# 🌐 **Crime Data Warehouse Star Schema**
 
-```mermaid
-erDiagram
+```
     DIM_CRIME_TYPE {
         int crime_type_id PK
         string crime_type
