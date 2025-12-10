@@ -14,8 +14,7 @@
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
   <img src="https://img.shields.io/badge/Data%20Warehouse-Kimball-blue?style=for-the-badge" />
   <img src="https://img.shields.io/badge/ETL%20Pipeline-R%20Script-green?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/BI%20Ready-Power%20BI-yellow?style=for-the-badge&logo=powerbi" />
-
+ 
 </p>
 
 ---
@@ -40,7 +39,7 @@ The final dataset powers analytics on:
 
 ---
 
-## 📦 End-to-End Crime Analytics Pipeline (ETL → Warehouse → BI)
+## 📦 End-to-End Crime Analytics Pipeline (ETL → Data Warehouse )
 
 ---
 
