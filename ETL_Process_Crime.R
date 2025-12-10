@@ -7,50 +7,26 @@ library(readr)
 library(lubridate)
 library(DBI)
 library(RPostgres)
-
-
-# -------------------------- Configuration ---------------------------------
-
-# ❗ Update these paths/db settings for your environment
-
-CRIME_DATA_DIR   <- "D:/Abiodun/Path/DATA WAREHOUSE DATA/Crime_data/Data_Source"
-POLICE_FILE_PATH <- "D:/Abiodun/Path/DATA WAREHOUSE DATA/Crime_data/Police_Force_Strength/Police_Force_Strength.csv"
-OUTPUT_CSV_PATH  <- "D:/Abiodun/Path/DATA WAREHOUSE DATA/final_data/Crime_df.csv"
-
-DB_NAME       <- "CrimeProject"
-DB_HOST       <- "------"
-DB_PORT       <- ----
-DB_USER       <- "postgres"
-DB_PASSWORD   <- "----"    
-DB_TABLE_NAME <- "crime_df"
+library(odbc)
+library(RODBC)
 
 # ------------------------ File Ingestion --------------------------
-
+# Define a function to read and merge multiple CSV files using data.table
 merge_csv_files <- function(mypath) {
-  filenames <- list.files(path = mypath, pattern = "\\.csv$", full.names = TRUE)
+  # Get the list of file names
+  filenames <- list.files(path = mypath, full.names = TRUE)
   
-  if (length(filenames) == 0) {
-    stop("No CSV files found in directory: ", mypath)
-  }
+  # Read and merge CSV files using data.table's fread function
+  merged_data <- rbindlist(lapply(filenames, fread))
   
-  message("Found ", length(filenames), " file(s). Reading...")
-  dt_list <- lapply(filenames, fread)
-  merged_data <- rbindlist(dt_list, fill = TRUE)
-  
-  message("Merged rows: ", nrow(merged_data))
   return(merged_data)
 }
 
-# ------------------------- Ingest Crime Data ------------------------------
+# Specify the directory containing CSV files
+directory_path <- "PATH"
 
-Crime_data_df <- merge_csv_files(CRIME_DATA_DIR)
-
-message("Columns in raw crime data:")
-print(colnames(Crime_data_df))
-message("Structure of raw crime data:")
-glimpse(Crime_data_df)
-
-message("Raw crime data dimensions: ", paste(dim(Crime_data_df), collapse = " x "))
+# Call the merge_csv_files function to merge CSV files from the directory
+Crime_data_df <- merge_csv_files(directory_path)
 
 # -------------------- Select Relevant Crime Variables ---------------------
 
@@ -191,37 +167,33 @@ Crime_df <- Crime_df %>%
 message("Final Crime_df structure:")
 glimpse(Crime_df)
 
-# --------------------- Export to CSV -------------------------------------
-
-write.csv(Crime_df, file = OUTPUT_CSV_PATH, row.names = FALSE)
-message("Crime_df written to: ", OUTPUT_CSV_PATH)
 
 # --------------------- 12. Load into PostgreSQL ------------------------------
 
-message("Connecting to PostgreSQL...")
+# Connection to the database
+con <- dbConnect(RPostgres::Postgres(), 
+                 dbname = "CrimeProject",
+                 host = "-----",
+                 port = ----,
+                 user = "postgres",
+                 password = ----) 
 
-con <- dbConnect(
-  RPostgres::Postgres(),
-  dbname   = DB_NAME,
-  host     = DB_HOST,
-  port     = DB_PORT,
-  user     = DB_USER,
-  password = DB_PASSWORD
-)
+# Write to the database, overwriting existing table
+dbWriteTable(con, "crime_df", Crime_df, overwrite = TRUE)
 
-# Ensure disconnection on exit
-on.exit({
-  try(dbDisconnect(con), silent = TRUE)
-}, add = TRUE)
 
-message("Writing table '", DB_TABLE_NAME, "' to database '", DB_NAME, "'...")
 
-dbWriteTable(
-  conn      = con,
-  name      = DB_TABLE_NAME,
-  value     = Crime_df,
-  overwrite = TRUE
-)
+# Write to the database, appending data to existing table
+#dbWriteTable(con, "Crime_df", Crime_df, append = TRUE)
+
+
+# Write to the database with a different table name
+#dbWriteTable(con, "New_Crime_df", Crime_df)
+
+
+dbDisconnect(con)
+
+
 
 
 
