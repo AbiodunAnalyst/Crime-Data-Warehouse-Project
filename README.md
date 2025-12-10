@@ -115,7 +115,6 @@ The final transformed dataset is saved as `Crime_df`.
 ### 🗄 Loaded
 The curated `Crime_df` table is then:
 
-- Exported to a clean CSV for archive and validation.
 - Loaded into **PostgreSQL** using `DBI` + `RPostgres` as a staging table:
 
 ---
