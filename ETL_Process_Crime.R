@@ -144,6 +144,14 @@ Police_data <- read.csv(POLICE_FILE_PATH, stringsAsFactors = FALSE)
 message("Police strength data preview:")
 glimpse(Police_data)
 
+# --------------------- Missing Value Handling -----------------------------
+
+message("NA counts per column:")
+Police_data %>%
+  summarise(across(everything(), ~ sum(is.na(.)))) %>%
+  print()
+
+
 Police_data <- Police_data %>%
   mutate(
     Date = as.Date(Date, format = "%m/%d/%Y"),
@@ -192,6 +200,7 @@ dbWriteTable(con, "crime_df", Crime_df, overwrite = TRUE)
 
 
 dbDisconnect(con)
+
 
 
 
