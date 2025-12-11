@@ -168,7 +168,7 @@ message("Final Crime_df structure:")
 glimpse(Crime_df)
 
 
-# --------------------- 12. Load into PostgreSQL ------------------------------
+# --------------------- Load into PostgreSQL ------------------------------
 
 # Connection to the database
 con <- dbConnect(RPostgres::Postgres(), 
@@ -192,6 +192,7 @@ dbWriteTable(con, "crime_df", Crime_df, overwrite = TRUE)
 
 
 dbDisconnect(con)
+
 
 
 
