@@ -27,6 +27,7 @@ directory_path <- "PATH"
 
 # Call the merge_csv_files function to merge CSV files from the directory
 Crime_data_df <- merge_csv_files(directory_path)
+View(Crime_data_df)
 
 # -------------------- Select Relevant Crime Variables ---------------------
 
@@ -139,7 +140,7 @@ glimpse(Crime_data)
 
 # --------------------- Load Police Strength Data --------------------------
 
-Police_data <- read.csv(POLICE_FILE_PATH, stringsAsFactors = FALSE)
+Police_data <- read.csv("PATH", stringsAsFactors = FALSE)
 
 message("Police strength data preview:")
 glimpse(Police_data)
@@ -150,6 +151,14 @@ message("NA counts per column:")
 Police_data %>%
   summarise(across(everything(), ~ sum(is.na(.)))) %>%
   print()
+
+View(Police_data)
+
+# Remove rows where all specified columns are NA or empty
+Police_data <- Police_data %>%
+  filter(!(is.na(Date) & is.na(Police.Officer.Strength) &
+             is.na(Police.Staff.Strength) & is.na(PCSO.Strength)))
+
 
 
 Police_data <- Police_data %>%
@@ -181,10 +190,10 @@ glimpse(Crime_df)
 # Connection to the database
 con <- dbConnect(RPostgres::Postgres(), 
                  dbname = "CrimeProject",
-                 host = "-----",
-                 port = ----,
+                 host = "--",
+                 port = --,
                  user = "postgres",
-                 password = ----) 
+                 password = "--) 
 
 # Write to the database, overwriting existing table
 dbWriteTable(con, "crime_df", Crime_df, overwrite = TRUE)
@@ -200,29 +209,6 @@ dbWriteTable(con, "crime_df", Crime_df, overwrite = TRUE)
 
 
 dbDisconnect(con)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
