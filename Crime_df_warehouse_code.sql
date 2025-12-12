@@ -59,16 +59,18 @@ WHERE "Location" IS NOT NULL AND trim("Location") <> '';
     
 CREATE TABLE dim_lsoaname (
     lsoa_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    lsoa_name VARCHAR(100) NOT NULL UNIQUE,
-    lsoa_code VARCHAR(50)
+    lsoa_name VARCHAR(100) NOT NULL,
+    lsoa_code VARCHAR(50),
+    CONSTRAINT uq_dim_lsoa UNIQUE (lsoa_name, lsoa_code)
 );
 
 INSERT INTO dim_lsoaname (lsoa_name, lsoa_code)
 SELECT DISTINCT
-    "LSOA_name",
-    "LSOA_code"
+    trim("LSOA_name") AS lsoa_name,
+    trim("LSOA_code") AS lsoa_code
 FROM crime_df
-WHERE "LSOA_name" IS NOT NULL;
+WHERE "LSOA_name" IS NOT NULL
+  AND trim("LSOA_name") <> '';
 
 .........................................................................................................
 
