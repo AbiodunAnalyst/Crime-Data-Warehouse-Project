@@ -158,7 +158,10 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 ---
 
 📊 **Crime Distribution**
+---
+![](COD.jpg)
 
+---
 - Crime is highly concentrated, with a small number of LSOAs and locations accounting for the majority of incidents.
 
 - Violence & sexual offences and anti-social behaviour consistently represent the largest share of total crime.
