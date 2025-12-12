@@ -1,4 +1,90 @@
 
+CREATE TABLE dim_date (
+    date_id      INT PRIMARY KEY,   -- e.g. 202201 (YYYYMM)
+    year         INT NOT NULL,
+    month_number INT NOT NULL,
+    year_month   VARCHAR(7) NOT NULL,    -- 'YYYY-MM'
+    month_name   VARCHAR(20),
+    quarter      INT
+);
+
+INSERT INTO dim_date (
+    date_id,
+    year,
+    month_number,
+    year_month,
+    month_name,
+    quarter
+)
+SELECT
+    y * 100 + m                           AS date_id,        -- 2022*100 + 1 = 202201
+    y                                     AS year,
+    m                                     AS month_number,
+    format('%s-%02s', y, m)               AS year_month,     -- '2022-01'
+    to_char(make_date(y, m, 1), 'Month')  AS month_name,     -- 'January ', etc.
+    extract(quarter FROM make_date(y, m, 1))::int AS quarter
+FROM generate_series(2020, 2025) AS y
+CROSS JOIN generate_series(1, 12) AS m;
+
+.....................................................................................
+    
+
+CREATE TABLE dim_outcome (
+    outcome_id            INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    last_outcome_category VARCHAR(200) NOT NULL UNIQUE
+);
+
+INSERT INTO dim_outcome (last_outcome_category)
+SELECT DISTINCT
+    "Last_outcome_category"   -- or adjust to your exact column name
+FROM crime_df
+WHERE "Last_outcome_category" IS NOT NULL
+  AND trim("Last_outcome_category") <> '';
+
+....................................................................................................
+
+    
+CREATE TABLE dim_location (
+    location_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    location    VARCHAR(100) UNIQUE
+);
+
+INSERT INTO dim_location (location)
+SELECT DISTINCT
+    "Location"
+FROM crime_df
+WHERE "Location" IS NOT NULL AND trim("Location") <> '';
+
+................................................................................................
+    
+CREATE TABLE dim_lsoaname (
+    lsoa_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    lsoa_name VARCHAR(100) NOT NULL UNIQUE,
+    lsoa_code VARCHAR(50)
+);
+
+INSERT INTO dim_lsoaname (lsoa_name, lsoa_code)
+SELECT DISTINCT
+    "LSOA_name",
+    "LSOA_code"
+FROM crime_df
+WHERE "LSOA_name" IS NOT NULL;
+
+.........................................................................................................
+
+CREATE TABLE dim_crime_type (
+    crime_type_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    crime_type    VARCHAR(100) NOT NULL UNIQUE
+);
+
+INSERT INTO dim_crime_type (crime_type)
+SELECT DISTINCT "Crime_type"
+FROM crime_df
+WHERE "Crime_type" IS NOT NULL;
+
+
+.................................................................................................
+
 
 CREATE TABLE fact_occuring_time (
     date_id                  INT,
@@ -23,7 +109,6 @@ CREATE TABLE fact_occuring_time (
     CONSTRAINT fk_fot_crime_type
         FOREIGN KEY (crime_type_id) REFERENCES dim_crime_type (crime_type_id)
 );
-
 
 INSERT INTO fact_occuring_time (
     date_id,
@@ -75,8 +160,7 @@ GROUP BY
     ct.crime_type_id,
     cd."Crime_type";
 
-
-
+............................................................................................
 
 
 CREATE TABLE fact_resolution (
@@ -177,8 +261,7 @@ GROUP BY
     o.outcome_id,
     cd."Last_outcome_category";
 
-
-
+.....................................................................................................
 
 CREATE TABLE fact_crime_count (
     date_id         INT,
@@ -203,8 +286,6 @@ CREATE TABLE fact_crime_count (
     CONSTRAINT fk_fact_cc_crime_type
         FOREIGN KEY (crime_type_id) REFERENCES dim_crime_type (crime_type_id)
 );
-
-
 
 
 INSERT INTO fact_crime_count (
@@ -258,7 +339,7 @@ GROUP BY
     cd."Crime_type";
 
 
-
+.........................................................................................................
 
 
 CREATE TABLE fact_crime_num (
@@ -352,87 +433,3 @@ GROUP BY
 
 
 
-CREATE TABLE dim_date (
-    date_id      INT PRIMARY KEY,   -- e.g. 202201 (YYYYMM)
-    year         INT NOT NULL,
-    month_number INT NOT NULL,
-    year_month   VARCHAR(7) NOT NULL,    -- 'YYYY-MM'
-    month_name   VARCHAR(20),
-    quarter      INT
-);
-
-INSERT INTO dim_date (
-    date_id,
-    year,
-    month_number,
-    year_month,
-    month_name,
-    quarter
-)
-SELECT
-    y * 100 + m                           AS date_id,        -- 2022*100 + 1 = 202201
-    y                                     AS year,
-    m                                     AS month_number,
-    format('%s-%02s', y, m)               AS year_month,     -- '2022-01'
-    to_char(make_date(y, m, 1), 'Month')  AS month_name,     -- 'January ', etc.
-    extract(quarter FROM make_date(y, m, 1))::int AS quarter
-FROM generate_series(2020, 2025) AS y
-CROSS JOIN generate_series(1, 12) AS m;
-
-
-
-CREATE TABLE dim_outcome (
-    outcome_id            INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    last_outcome_category VARCHAR(200) NOT NULL UNIQUE
-);
-
-INSERT INTO dim_outcome (last_outcome_category)
-SELECT DISTINCT
-    "Last_outcome_category"   -- or adjust to your exact column name
-FROM crime_df
-WHERE "Last_outcome_category" IS NOT NULL
-  AND trim("Last_outcome_category") <> '';
-
-
-CREATE TABLE dim_location (
-    location_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    location    VARCHAR(100) UNIQUE
-);
-
-INSERT INTO dim_location (location)
-SELECT DISTINCT
-    "Location"
-FROM crime_df
-WHERE "Location" IS NOT NULL AND trim("Location") <> '';
-
-
-CREATE TABLE dim_lsoaname (
-    lsoa_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    lsoa_name VARCHAR(100) NOT NULL UNIQUE,
-    lsoa_code VARCHAR(50)
-);
-
-INSERT INTO dim_lsoaname (lsoa_name, lsoa_code)
-SELECT DISTINCT
-    "LSOA_name",
-    "LSOA_code"
-FROM crime_df
-WHERE "LSOA_name" IS NOT NULL;
-
-
-
-CREATE TABLE dim_crime_type (
-    crime_type_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    crime_type    VARCHAR(100) NOT NULL UNIQUE
-);
-
-INSERT INTO dim_crime_type (crime_type)
-SELECT DISTINCT "Crime_type"
-FROM crime_df
-WHERE "Crime_type" IS NOT NULL;
-
-
-
-SELECT * from crime_df LIMIT 5
-
-SELECT * from dim_date LIMIT 5
