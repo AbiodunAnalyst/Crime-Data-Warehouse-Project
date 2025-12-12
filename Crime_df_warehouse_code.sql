@@ -1,9 +1,8 @@
-
 CREATE TABLE dim_date (
-    date_id      INT PRIMARY KEY,   -- e.g. 202201 (YYYYMM)
+    date_id      INT PRIMARY KEY,  
     year         INT NOT NULL,
     month_number INT NOT NULL,
-    year_month   VARCHAR(7) NOT NULL,    -- 'YYYY-MM'
+    year_month   VARCHAR(7) NOT NULL,    
     month_name   VARCHAR(20),
     quarter      INT
 );
@@ -17,16 +16,16 @@ INSERT INTO dim_date (
     quarter
 )
 SELECT
-    y * 100 + m                           AS date_id,        -- 2022*100 + 1 = 202201
+    y * 100 + m                           AS date_id,        
     y                                     AS year,
     m                                     AS month_number,
-    format('%s-%02s', y, m)               AS year_month,     -- '2022-01'
-    to_char(make_date(y, m, 1), 'Month')  AS month_name,     -- 'January ', etc.
+    format('%s-%02s', y, m)               AS year_month,     
+    to_char(make_date(y, m, 1), 'Month')  AS month_name,     
     extract(quarter FROM make_date(y, m, 1))::int AS quarter
 FROM generate_series(2020, 2025) AS y
 CROSS JOIN generate_series(1, 12) AS m;
 
-.....................................................................................
+..................................................................................
     
 
 CREATE TABLE dim_outcome (
@@ -36,7 +35,7 @@ CREATE TABLE dim_outcome (
 
 INSERT INTO dim_outcome (last_outcome_category)
 SELECT DISTINCT
-    "Last_outcome_category"   -- or adjust to your exact column name
+    "Last_outcome_category"   
 FROM crime_df
 WHERE "Last_outcome_category" IS NOT NULL
   AND trim("Last_outcome_category") <> '';
@@ -59,18 +58,16 @@ WHERE "Location" IS NOT NULL AND trim("Location") <> '';
     
 CREATE TABLE dim_lsoaname (
     lsoa_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    lsoa_name VARCHAR(100) NOT NULL,
-    lsoa_code VARCHAR(50),
-    CONSTRAINT uq_dim_lsoa UNIQUE (lsoa_name, lsoa_code)
+    lsoa_name VARCHAR(100) NOT NULL UNIQUE,
+    lsoa_code VARCHAR(50)
 );
 
 INSERT INTO dim_lsoaname (lsoa_name, lsoa_code)
 SELECT DISTINCT
-    trim("LSOA_name") AS lsoa_name,
-    trim("LSOA_code") AS lsoa_code
+    "LSOA_name",
+    "LSOA_code"
 FROM crime_df
-WHERE "LSOA_name" IS NOT NULL
-  AND trim("LSOA_name") <> '';
+WHERE "LSOA_name" IS NOT NULL;
 
 .........................................................................................................
 
@@ -128,39 +125,38 @@ INSERT INTO fact_occuring_time (
 )
 SELECT
     -- YYYYMM from TEXT "Date"
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)              AS date_id,
-    split_part(cd."Date", '-', 1)::int               AS year,
-    split_part(cd."Date", '-', 2)::int               AS month_number,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)      AS date_id,
+    split_part(trim(cd."Date"), '-', 1)::int       AS year,
+    split_part(trim(cd."Date"), '-', 2)::int       AS month_number,
     l.lsoa_id,
-    cd."LSOA_name"                                   AS lsoa_name,
+    l.lsoa_name                                    AS lsoa_name,
     loc.location_id,
-    cd."Location"                                    AS location,
-    cd."Longitude"                                   AS longitude,
-    cd."Latitude"                                    AS latitude,
+    loc.location                                   AS location,
+    AVG(cd."Longitude")                            AS longitude,
+    AVG(cd."Latitude")                             AS latitude,
     ct.crime_type_id,
-    cd."Crime_type"                                  AS crime_type,
-    COUNT(*)                                         AS number_of_crime_occuring
+    cd."Crime_type"                                AS crime_type,
+    COUNT(*)                                       AS number_of_crime_occuring
 FROM crime_df cd
 JOIN dim_lsoaname   l   ON cd."LSOA_name"  = l.lsoa_name
 JOIN dim_location   loc ON cd."Location"   = loc.location
 JOIN dim_crime_type ct  ON cd."Crime_type" = ct.crime_type
 JOIN dim_date       d   ON d.date_id =
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)
 GROUP BY
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int),
-    split_part(cd."Date", '-', 1)::int,
-    split_part(cd."Date", '-', 2)::int,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int),
+    split_part(trim(cd."Date"), '-', 1)::int,
+    split_part(trim(cd."Date"), '-', 2)::int,
     l.lsoa_id,
-    cd."LSOA_name",
+    l.lsoa_name,
     loc.location_id,
-    cd."Location",
-    cd."Longitude",
-    cd."Latitude",
+    loc.location,
     ct.crime_type_id,
     cd."Crime_type";
+
 
 ............................................................................................
 
@@ -217,51 +213,46 @@ INSERT INTO fact_resolution (
     number_of_resolution
 )
 SELECT
-    -- YYYYMM from TEXT "Date"
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)              AS date_id,
-    split_part(cd."Date", '-', 1)::int               AS year,
-    split_part(cd."Date", '-', 2)::int               AS month_number,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)      AS date_id,
+    split_part(trim(cd."Date"), '-', 1)::int       AS year,
+    split_part(trim(cd."Date"), '-', 2)::int       AS month_number,
     l.lsoa_id,
-    cd."LSOA_name"                                   AS lsoa_name,
+    l.lsoa_name                                    AS lsoa_name,
     loc.location_id,
-    cd."Location"                                    AS location,
-    cd."Longitude"                                   AS longitude,
-    cd."Latitude"                                    AS latitude,
-    cd."Police_Officer_Strength"                     AS police_officer_strength,
-    cd."Police_Staff_Strength"                       AS police_staff_strength,
-    cd."PCSO_Strength"                               AS pcso_strength,
+    loc.location                                   AS location,
+    AVG(cd."Longitude")                            AS longitude,
+    AVG(cd."Latitude")                             AS latitude,
+    AVG(cd."Police_Officer_Strength")::INT         AS police_officer_strength,
+    AVG(cd."Police_Staff_Strength")::INT           AS police_staff_strength,
+    AVG(cd."PCSO_Strength")::INT                   AS pcso_strength,
     ct.crime_type_id,
-    cd."Crime_type"                                  AS crime_type,
+    cd."Crime_type"                                AS crime_type,
     o.outcome_id,
-    cd."Last_outcome_category"                       AS last_outcome_category,
-    COUNT(*)                                         AS number_of_resolution
+    cd."Last_outcome_category"                     AS last_outcome_category,
+    COUNT(*)                                       AS number_of_resolution
 FROM crime_df cd
 JOIN dim_lsoaname   l   ON cd."LSOA_name"             = l.lsoa_name
 JOIN dim_location   loc ON cd."Location"              = loc.location
 JOIN dim_crime_type ct  ON cd."Crime_type"            = ct.crime_type
 JOIN dim_outcome    o   ON cd."Last_outcome_category" = o.last_outcome_category
 JOIN dim_date       d   ON d.date_id =
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)
 GROUP BY
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int),
-    split_part(cd."Date", '-', 1)::int,
-    split_part(cd."Date", '-', 2)::int,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int),
+    split_part(trim(cd."Date"), '-', 1)::int,
+    split_part(trim(cd."Date"), '-', 2)::int,
     l.lsoa_id,
-    cd."LSOA_name",
+    l.lsoa_name,
     loc.location_id,
-    cd."Location",
-    cd."Longitude",
-    cd."Latitude",
-    cd."Police_Officer_Strength",
-    cd."Police_Staff_Strength",
-    cd."PCSO_Strength",
+    loc.location,
     ct.crime_type_id,
     cd."Crime_type",
     o.outcome_id,
     cd."Last_outcome_category";
+
 
 .....................................................................................................
 
@@ -305,40 +296,38 @@ INSERT INTO fact_crime_count (
     number_of_crime
 )
 SELECT
-    -- Same YYYYMM key from TEXT "Date"
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)              AS date_id,
-    split_part(cd."Date", '-', 1)::int               AS year,
-    split_part(cd."Date", '-', 2)::int               AS month_number,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)      AS date_id,
+    split_part(trim(cd."Date"), '-', 1)::int       AS year,
+    split_part(trim(cd."Date"), '-', 2)::int       AS month_number,
     l.lsoa_id,
-    cd."LSOA_name"                                   AS lsoa_name,
+    l.lsoa_name                                    AS lsoa_name,
     loc.location_id,
-    cd."Location"                                    AS location,
-    cd."Longitude"                                   AS longitude,
-    cd."Latitude"                                    AS latitude,
+    loc.location                                   AS location,
+    AVG(cd."Longitude")                            AS longitude,
+    AVG(cd."Latitude")                             AS latitude,
     ct.crime_type_id,
-    cd."Crime_type"                                  AS crime_type,
-    COUNT(*)                                         AS number_of_crime
+    cd."Crime_type"                                AS crime_type,
+    COUNT(*)                                       AS number_of_crime
 FROM crime_df cd
 JOIN dim_lsoaname   l   ON cd."LSOA_name"  = l.lsoa_name
 JOIN dim_location   loc ON cd."Location"   = loc.location
 JOIN dim_crime_type ct  ON cd."Crime_type" = ct.crime_type
 JOIN dim_date       d   ON d.date_id =
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)
 GROUP BY
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int),
-    split_part(cd."Date", '-', 1)::int,
-    split_part(cd."Date", '-', 2)::int,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int),
+    split_part(trim(cd."Date"), '-', 1)::int,
+    split_part(trim(cd."Date"), '-', 2)::int,
     l.lsoa_id,
-    cd."LSOA_name",
+    l.lsoa_name,
     loc.location_id,
-    cd."Location",
-    cd."Longitude",
-    cd."Latitude",
+    loc.location,
     ct.crime_type_id,
     cd."Crime_type";
+
 
 
 .........................................................................................................
@@ -390,44 +379,39 @@ INSERT INTO fact_crime_num (
     number_of_crime
 )
 SELECT
-    -- Build date_id as YYYYMM from TEXT "Date"
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)              AS date_id,
-    split_part(cd."Date", '-', 1)::int               AS year,
-    split_part(cd."Date", '-', 2)::int               AS month_number,
+    -- YYYYMM from TEXT "Date"
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)      AS date_id,
+    split_part(trim(cd."Date"), '-', 1)::int       AS year,
+    split_part(trim(cd."Date"), '-', 2)::int       AS month_number,
     l.lsoa_id,
-    cd."LSOA_name"                                   AS lsoa_name,
+    l.lsoa_name                                    AS lsoa_name,
     loc.location_id,
-    cd."Location"                                    AS location,
-    cd."Longitude"                                   AS longitude,
-    cd."Latitude"                                    AS latitude,
-    cd."Police_Officer_Strength"                     AS police_officer_strength,
-    cd."Police_Staff_Strength"                       AS police_staff_strength,
-    cd."PCSO_Strength"                               AS pcso_strength,
+    loc.location                                   AS location,
+    AVG(cd."Longitude")                            AS longitude,
+    AVG(cd."Latitude")                             AS latitude,
+    AVG(cd."Police_Officer_Strength")::INT         AS police_officer_strength,
+    AVG(cd."Police_Staff_Strength")::INT           AS police_staff_strength,
+    AVG(cd."PCSO_Strength")::INT                   AS pcso_strength,
     ct.crime_type_id,
-    cd."Crime_type"                                  AS crime_type,
-    COUNT(*)                                         AS number_of_crime
+    cd."Crime_type"                                AS crime_type,
+    COUNT(*)                                       AS number_of_crime
 FROM crime_df cd
 JOIN dim_lsoaname   l   ON cd."LSOA_name"  = l.lsoa_name
 JOIN dim_location   loc ON cd."Location"   = loc.location
 JOIN dim_crime_type ct  ON cd."Crime_type" = ct.crime_type
 JOIN dim_date       d   ON d.date_id =
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int)
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int)
 GROUP BY
-    (split_part(cd."Date", '-', 1)::int * 100 +
-     split_part(cd."Date", '-', 2)::int),
-    split_part(cd."Date", '-', 1)::int,
-    split_part(cd."Date", '-', 2)::int,
+    (split_part(trim(cd."Date"), '-', 1)::int * 100 +
+     split_part(trim(cd."Date"), '-', 2)::int),
+    split_part(trim(cd."Date"), '-', 1)::int,
+    split_part(trim(cd."Date"), '-', 2)::int,
     l.lsoa_id,
-    cd."LSOA_name",
+    l.lsoa_name,
     loc.location_id,
-    cd."Location",
-    cd."Longitude",
-    cd."Latitude",
-    cd."Police_Officer_Strength",
-    cd."Police_Staff_Strength",
-    cd."PCSO_Strength",
+    loc.location,
     ct.crime_type_id,
     cd."Crime_type";
 
