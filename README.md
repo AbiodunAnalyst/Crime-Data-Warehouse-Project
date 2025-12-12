@@ -153,32 +153,32 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 ---
 
-🔍 Key Insights - BI Solution using Streamlit App deployment
+🔍 **Key Insights - BI Solution using Streamlit App deployment**
 
 ---
 
-📊 Crime Distribution
+📊 **Crime Distribution**
 
 - Crime is highly concentrated, with a small number of LSOAs and locations accounting for the majority of incidents.
 
 - Violence & sexual offences and anti-social behaviour consistently represent the largest share of total crime.
 
 ---
-⏱️ Time Patterns
+⏱️ **Time Patterns**
 ---
 - Crime levels show clear monthly seasonality, with recurring peaks and troughs across years.
 
 - Temporal patterns are stable, indicating predictable demand cycles rather than random fluctuations.
 ---
 
-📍 Geographic Hotspots
+📍 **Geographic Hotspots**
 ---
 - Crime is geographically clustered, not evenly distributed.
 
 - Persistent hotspots remain active across multiple periods, suggesting structural or environmental drivers rather than short-term anomalies.
 
 ---
-👮 Police Strength vs Crime
+👮 **Police Strength vs Crime**
 ---
 - Higher police strength does not automatically result in lower crime volumes.
 
@@ -187,7 +187,7 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 - Workforce levels appear broadly stable while crime fluctuates, suggesting non-workforce drivers of crime.
 
 ---
-✅ Crime Resolution
+✅ **Crime Resolution**
 ---
 - Resolution success varies significantly by crime type.
 
@@ -196,7 +196,7 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 - Some crime types show persistently low resolution volumes, highlighting investigative challenges and prioritisation gaps.
 
 ---
-📈 Strategic Implications
+📈 **Strategic Implications**
 ---
 - Targeted hotspot interventions are likely to be more effective than uniform resource increases.
 
@@ -212,11 +212,3 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 
 
-### 🧠 What this enables
-
-Analysts and BI tools (e.g. Power BI, Tableau) can now easily answer questions like:
-
-- How do crime volumes vary by **crime type and LSOA** over time?  
-- Which areas show the highest **crime resolution rates** by outcome category?  
-- On which **day of the week** do specific crime types peak?  
-- Is there any relationship between **police strength** and recorded crime volume?
