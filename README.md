@@ -153,11 +153,10 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 ---
 
-BI Solution using Streamlit App deployment
+🔍 Key Insights - BI Solution using Streamlit App deployment
 
 ---
 
-🔍 Key Insights 
 📊 Crime Distribution
 
 - Crime is highly concentrated, with a small number of LSOAs and locations accounting for the majority of incidents.
