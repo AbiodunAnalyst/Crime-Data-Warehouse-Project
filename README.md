@@ -77,13 +77,13 @@ The final dataset powers analytics on:
              │  - fact_crime_num                  │
              │  - fact_crime_count                │
              │  - fact_crime_resolution           │
-             │  - fact_crime_time                 │
+             │  - fact_occuring_time              │
              └───────────────────┬────────────────┘
                                  │
                                  ▼
              ┌────────────────────────────────────┐
              │   BI & Analytics Layer             │
-             │  - Power BI / SQL reporting        │
+             │  - Streamlit app / SQL reporting   │
              │  - Crime trend analysis            │
              │  - Hotspot & outcome insights      │
              │  - Staffing vs crime correlations  │
@@ -153,6 +153,18 @@ BI Solution using Streamlit App deployment
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+**CMP_App** *[CMP_App](https://crime-data-warehouse-project-werssygoztfug6fijvbfew.streamlit.app)*
 
 
 
