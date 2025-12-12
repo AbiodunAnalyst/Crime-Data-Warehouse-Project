@@ -157,7 +157,7 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 ---
 
-📊 **Crime Distribution**
+📊 **Crime Distribution & *Geographic Hotspots**
 ---
 ![](COD.jpg)
 
@@ -165,23 +165,24 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 - Violence & sexual offences and anti-social behaviour consistently represent the largest share of total crime.
 
----
-⏱️ **Time Patterns**
----
-- Crime levels show clear monthly seasonality, with recurring peaks and troughs across years.
-
-- Temporal patterns are stable, indicating predictable demand cycles rather than random fluctuations.
----
-
-📍 **Geographic Hotspots**
----
 - Crime is geographically clustered, not evenly distributed.
 
 - Persistent hotspots remain active across multiple periods, suggesting structural or environmental drivers rather than short-term anomalies.
 
 ---
+⏱️ **Time Patterns**
+---
+![](CTPD.jpg)
+
+- Crime levels show clear monthly seasonality, with recurring peaks and troughs across years.
+
+- Temporal patterns are stable, indicating predictable demand cycles rather than random fluctuations.
+
+---
 👮 **Police Strength vs Crime**
 ---
+![](CVPSD.jpg)
+
 - Higher police strength does not automatically result in lower crime volumes.
 
 - Several high-crime areas already have relatively strong officer presence, indicating reactive deployment and diminishing returns at higher staffing levels.
@@ -191,6 +192,8 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 ---
 ✅ **Crime Resolution**
 ---
+![](ROTM.jpg)
+
 - Resolution success varies significantly by crime type.
 
 - A small number of outcome categories account for most resolved cases.
