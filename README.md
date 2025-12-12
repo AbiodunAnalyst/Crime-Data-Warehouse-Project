@@ -145,7 +145,7 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 **ERP Diagram**
 
-![](Crime_df_WH)
+![](Crime_df_WH.JPG)
 
 ---
 
