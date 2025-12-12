@@ -70,7 +70,7 @@ The final dataset powers analytics on:
              ┌────────────────────────────────────┐
              │   Data Warehouse (Star Schema)     │
              │  - dim_crime_type                  │
-             │  - dim_lsoaname                        │
+             │  - dim_lsoaname                    │
              │  - dim_location                    │
              │  - dim_outcome                     │
              │  - dim_date                        │
@@ -148,6 +148,13 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 ![](Crime_df_WH.jpg)
 
 ---
+
+BI Solution using Streamlit App deployment
+
+---
+
+
+
 
 ### 🧠 What this enables
 
