@@ -153,7 +153,7 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 ---
 
-🔍 **Key Insights - BI Solution using Streamlit App deployment**
+🔍 **Key Insights - BI Solution (App deployment)**
 
 ---
 
