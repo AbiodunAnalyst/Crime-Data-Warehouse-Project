@@ -38,7 +38,16 @@ The final dataset powers analytics on:
 - Relationship between crime and police staffing  
 
 ---
+Personal Contribution & Responsibilities
+---
+- System Architecture & Data Pipeline Design
+- ETL Pipeline Development (R)
+- Data Quality & Governance
+- Database & Data Warehouse Implementation
+- Analytics & BI Layer
 
+
+---
 ## 📦 End-to-End Crime Analytics Pipeline (ETL → Data Warehouse )
 
 ---
