@@ -157,12 +157,36 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 ![](Crime_df_WH.jpg)
 
 ---
+### Deployment Using Streamlit
+---
+
+### Web Application Features:
+
+  ###  **Web Application Development**
+    The web application was developed using Python within Visual Studio Code, enabling rapid iteration, 
+    debugging, and version control during the development process.
+  
+  ###  **Core Libraries and Frameworks**
+    - Streamlit - for building and deploying an interactive web-based analytics interface
+    - Pandas & NumPy - for data manipulation and numerical computation
+    - Plotly - for data visualisation
+    
+  ###  **Deployment Platform**
+    - The application was deployed using Streamlit, allowing the analytics platform to be accessed through a 
+      lightweight, browser-based interface without requiring complex infrastructure.
+    - Streamlit was selected for deployment due to its suitability for rapid prototyping of data-driven applications 
+      and its ability to make analytical insights accessible to non-technical users.
+
+---
+**BI Solution (App deployment)**
+
+---
 
 **CMP_App** *[CMP_App](https://crime-data-warehouse-project-werssygoztfug6fijvbfew.streamlit.app)*
 
 ---
 
-🔍 **Key Insights - BI Solution (App deployment)**
+🔍 **Key Insights**
 
 ---
 
