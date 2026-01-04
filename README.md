@@ -162,7 +162,7 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 
 ### Web Application Features:
 
-  ###  **Web Application Development**
+  ###  **Web Development**
     The web application was developed using Python within Visual Studio Code, enabling rapid iteration, 
     debugging, and version control during the development process.
   
