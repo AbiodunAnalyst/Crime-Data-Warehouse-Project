@@ -161,52 +161,50 @@ All fact tables use **foreign keys** back to the dimension tables (`dim_crime_ty
 ---
 ![](COD.jpg)
 
-- Crime is highly concentrated, with a small number of LSOAs and locations accounting for the majority of incidents.
-
-- Violence & sexual offences and anti-social behaviour consistently represent the largest share of total crime.
-
-- Crime is geographically clustered, not evenly distributed.
-
-- Persistent hotspots remain active across multiple periods, suggesting structural or environmental drivers rather than short-term anomalies.
+### Insight
+    - Crime is highly concentrated, with a small number of LSOAs and locations accounting for the majority of incidents.
+    - Violence & sexual offences and anti-social behaviour consistently represent the largest share of total crime.
+    - Crime is geographically clustered, not evenly distributed.
+    - Persistent hotspots remain active across multiple periods, suggesting structural or environmental drivers 
+      rather than short-term anomalies.
 
 ---
 ⏱️ **Time Patterns**
 ---
 ![](CTPD.jpg)
 
-- Crime levels show clear monthly seasonality, with recurring peaks and troughs across years.
-
-- Temporal patterns are stable, indicating predictable demand cycles rather than random fluctuations.
+### Insight
+    - Crime levels show clear monthly seasonality, with recurring peaks and troughs across years.
+    - Temporal patterns are stable, indicating predictable demand cycles rather than random fluctuations.
 
 ---
 👮 **Police Strength vs Crime**
 ---
 ![](CVPSD.jpg)
 
-- Higher police strength does not automatically result in lower crime volumes.
-
-- Several high-crime areas already have relatively strong officer presence, indicating reactive deployment and diminishing returns at higher staffing levels.
-
-- Workforce levels appear broadly stable while crime fluctuates, suggesting non-workforce drivers of crime.
+### Insight
+    - Higher police strength does not automatically result in lower crime volumes.
+    - Several high-crime areas already have relatively strong officer presence, indicating reactive 
+      deployment and diminishing returns at higher staffing levels.
+    - Workforce levels appear broadly stable while crime fluctuates, suggesting non-workforce drivers of crime.
 
 ---
 ✅ **Crime Resolution**
 ---
 ![](ROTM.jpg)
 
-- Resolution success varies significantly by crime type.
-
-- A small number of outcome categories account for most resolved cases.
-
-- Some crime types show persistently low resolution volumes, highlighting investigative challenges and prioritisation gaps.
+### Insight
+    - Resolution success varies significantly by crime type.
+    - A small number of outcome categories account for most resolved cases.
+    - Some crime types show persistently low resolution volumes, highlighting investigative 
+      challenges and prioritisation gaps.
 
 ---
 📈 **Strategic Implications**
 ---
+
 - Targeted hotspot interventions are likely to be more effective than uniform resource increases.
-
 - Time-based deployment planning can better align resources with predictable crime cycles.
-
 - Performance improvements are more likely through focused investigation strategies than blanket workforce expansion.
 
 
