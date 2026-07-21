@@ -30,8 +30,8 @@ This project combines publicly available street-level crime records with police 
 - **Dataset:** Street-level crime and latest outcome data
 - **Source:** https://data.police.uk/data/
 - **Geographic coverage:** London
-- **Period used:** 2020 - 2025
-- **Downloaded:** 2025
+- **Period used:** 2022 - 2023
+- **Downloaded:** 2024
 - **Licence:** Open Government Licence v3.0
 - **Licence information:** https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
 
@@ -43,8 +43,8 @@ The source provides CSV files containing street-level crime and outcome informat
 - **Dataset:** Police workforce open data tables
 - **Source:** https://www.gov.uk/government/statistical-data-sets/police-workforce-open-data-tables
 - **Measures used:** Police officer strength, police staff strength and Police Community Support Officer strength
-- **Period used:** 2020 - 2025
-- **Downloaded:** 2025
+- **Period used:** 2022 - 2023
+- **Downloaded:** 2024
 - **Licence:** Open Government Licence v3.0
 - **Licence information:** https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
 
