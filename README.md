@@ -22,11 +22,43 @@ The deployment is an analytical demonstration. It does not provide operational p
 
 ## Data provenance
 
-The project description reports more than 2.2 million UK crime records enriched with police workforce information.
+This project combines publicly available street-level crime records with police workforce statistics.
 
-> **[ACTION REQUIRED]** Add the exact source URLs, publishers, date ranges, download dates and licences for both the crime records and police-strength data. Confirm whether raw files may be redistributed. If not, remove them and provide acquisition instructions or scripts.
+### Crime records
 
-The repository’s MIT licence applies to original code only. It does not relicense public-sector datasets or third-party assets.
+- **Publisher:** UK Home Office / data.police.uk
+- **Dataset:** Street-level crime and latest outcome data
+- **Source:** https://data.police.uk/data/
+- **Geographic coverage:** London
+- **Period used:** 2020 - 2025
+- **Downloaded:** 2025
+- **Licence:** Open Government Licence v3.0
+- **Licence information:** https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+
+The source provides CSV files containing street-level crime and outcome information by police force and Lower Layer Super Output Area (LSOA). The project combines and transforms the selected monthly files for analytical warehousing.
+
+### Police workforce data
+
+- **Publisher:** Home Office
+- **Dataset:** Police workforce open data tables
+- **Source:** https://www.gov.uk/government/statistical-data-sets/police-workforce-open-data-tables
+- **Measures used:** Police officer strength, police staff strength and Police Community Support Officer strength
+- **Period used:** 2020 - 2025
+- **Downloaded:** 2025
+- **Licence:** Open Government Licence v3.0
+- **Licence information:** https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+
+The workforce data was standardised to a monthly date field and joined to the crime records to support descriptive comparisons between recorded crime volume and workforce measures.
+
+### Processing and redistribution
+
+The ETL workflow standardises dates and column names, handles incomplete records, derives time attributes and joins the selected crime and workforce data. The resulting warehouse supports analysis by time, LSOA, location, crime type, outcome and workforce measure.
+
+The source data remains subject to the Open Government Licence and is not covered by this repository's MIT licence. The MIT licence applies only to original code authored for this project.
+
+Users should obtain the latest source files from the official publishers. Any source or transformed data redistributed through this repository must retain the required attribution and comply with the applicable Open Government Licence terms.
+
+This project is an analytical demonstration. Observed associations between crime records and workforce measures do not establish that staffing levels cause changes in recorded crime.
 
 ## Architecture
 
