@@ -11,23 +11,53 @@ library(odbc)
 library(RODBC)
 
 # ------------------------ File Ingestion --------------------------
-# Define a function to read and merge multiple CSV files using data.table
-merge_csv_files <- function(mypath) {
-  # Get the list of file names
-  filenames <- list.files(path = mypath, full.names = TRUE)
-  
-  # Read and merge CSV files using data.table's fread function
-  merged_data <- rbindlist(lapply(filenames, fread))
-  
-  return(merged_data)
+# Read the crime-data directory from an environment variable
+crime_data_dir <- Sys.getenv("CRIME_DATA_DIR")
+
+# Confirm that the environment variable has been configured
+if (crime_data_dir == "") {
+  stop(
+    "CRIME_DATA_DIR has not been configured. ",
+    "Set it to the directory containing the monthly crime CSV files."
+  )
 }
 
-# Specify the directory containing CSV files
-directory_path <- "PATH"
+# Confirm that the configured directory exists
+if (!dir.exists(crime_data_dir)) {
+  stop("Crime-data directory not found: ", crime_data_dir)
+}
 
-# Call the merge_csv_files function to merge CSV files from the directory
-Crime_data_df <- merge_csv_files(directory_path)
-View(Crime_data_df)
+# Find the monthly street-crime CSV files
+crime_files <- list.files(
+  path = crime_data_dir,
+  pattern = "-street\\.csv$",
+  full.names = TRUE
+)
+
+# Stop if no matching files were found
+if (length(crime_files) == 0) {
+  stop(
+    "No street-crime CSV files were found in: ",
+    crime_data_dir
+  )
+}
+
+message("Crime files found: ", length(crime_files))
+
+# Read and combine all monthly files
+Crime_data_df <- data.table::rbindlist(
+  lapply(crime_files, data.table::fread),
+  use.names = TRUE,
+  fill = TRUE
+)
+
+message(
+  "Total crime records loaded: ",
+  format(nrow(Crime_data_df), big.mark = ",")
+)
+
+# Display the structure without opening an interactive RStudio viewer
+glimpse(Crime_data_df)
 
 # -------------------- Select Relevant Crime Variables ---------------------
 
@@ -140,7 +170,20 @@ glimpse(Crime_data)
 
 # --------------------- Load Police Strength Data --------------------------
 
-Police_data <- read.csv("PATH", stringsAsFactors = FALSE)
+police_data_file <- Sys.getenv("POLICE_DATA_FILE")
+
+if (police_data_file == "") {
+  stop("POLICE_DATA_FILE has not been configured.")
+}
+
+if (!file.exists(police_data_file)) {
+  stop("Police workforce file not found: ", police_data_file)
+}
+
+Police_data <- read.csv(
+  police_data_file,
+  stringsAsFactors = FALSE
+)
 
 message("Police strength data preview:")
 glimpse(Police_data)
@@ -188,12 +231,36 @@ glimpse(Crime_df)
 # --------------------- Load into PostgreSQL ------------------------------
 
 # Connection to the database
-con <- dbConnect(RPostgres::Postgres(), 
-                 dbname = "CrimeProject",
-                 host = "--",
-                 port = --,
-                 user = "postgres",
-                 password = "--) 
+db_name <- Sys.getenv("DB_NAME")
+db_host <- Sys.getenv("DB_HOST")
+db_port <- as.integer(Sys.getenv("DB_PORT", "5432"))
+db_user <- Sys.getenv("DB_USER")
+db_password <- Sys.getenv("DB_PASSWORD")
+
+required_db_values <- c(
+  DB_NAME = db_name,
+  DB_HOST = db_host,
+  DB_USER = db_user,
+  DB_PASSWORD = db_password
+)
+
+missing_db_values <- names(required_db_values)[required_db_values == ""]
+
+if (length(missing_db_values) > 0) {
+  stop(
+    "Missing database environment variables: ",
+    paste(missing_db_values, collapse = ", ")
+  )
+}
+
+con <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  dbname = db_name,
+  host = db_host,
+  port = db_port,
+  user = db_user,
+  password = db_password
+)
 
 # Write to the database, overwriting existing table
 dbWriteTable(con, "crime_df", Crime_df, overwrite = TRUE)
