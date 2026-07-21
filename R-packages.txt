@@ -1,0 +1,9 @@
+data.table
+dplyr
+tidyverse
+readr
+lubridate
+DBI
+RPostgres
+odbc
+RODBC
