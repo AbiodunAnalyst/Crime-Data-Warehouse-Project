@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Crime Data Warehouse and Analytics Pipeline"
+type: software
+authors:
+  - family-names: "Ojo"
+    given-names: "Abiodun"
+    orcid: "https://orcid.org/0009-0002-5679-7373"
+repository-code: "https://github.com/AbiodunAnalyst/Crime-Data-Warehouse-Project"
+url: "https://crime-data-warehouse-project-werssygoztfug6fijvbfew.streamlit.app/"
+license: MIT
+version: 1.0.0
+date-released: 2026-07-21
