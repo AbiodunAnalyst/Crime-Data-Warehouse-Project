@@ -1,0 +1,11 @@
+# Local configuration and credentials
+.env
+.Renviron
+
+# Local datasets
+data/raw/
+data/processed/
+
+# Python
+.venv/
+__pycache__/
