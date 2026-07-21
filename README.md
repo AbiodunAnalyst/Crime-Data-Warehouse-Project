@@ -1,250 +1,127 @@
-<h1 align="center">🏛 Crime Data Warehouse & Analytics Pipeline</h1>
+# Crime Data Warehouse & Analytics Pipeline
 
-<p align="center">
-  <strong>R ETL • Dimensional Modelling • PostgreSQL Warehouse • Data Quality Engineering • BI-Ready Fact Tables</strong>
-</p>
-<p align="center">
-  End-to-end data warehouse pipeline built for the UK Crime Dataset, featuring automated ETL in R, enriched data modelling, 
-  and warehouse ready fact/dimension tables powering advanced crime analytics. 
-</p>
+[![R](https://img.shields.io/badge/R-ETL-276DC3)](https://www.r-project.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-warehouse-4169E1)](https://www.postgresql.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-live-FF4B4B)](https://crime-data-warehouse-project-werssygoztfug6fijvbfew.streamlit.app/)
+[![License: MIT](https://img.shields.io/badge/Code%20License-MIT-green.svg)](LICENSE)
 
-<p align="center">
+An end-to-end public-data engineering project that uses R for extraction and transformation, PostgreSQL and SQL for dimensional warehousing, and Streamlit for interactive crime analytics.
 
-  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Data%20Warehouse-Kimball-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/ETL%20Pipeline-R%20Script-green?style=for-the-badge" />
- 
-</p>
+## Problem addressed
 
----
+Public crime data is distributed across files, periods and geographic levels. This project demonstrates how those records can be cleaned, enriched and organised into an analytical warehouse supporting repeatable trend, location, outcome and staffing analysis.
 
-<p align="center">
-  <em>This project demonstrates enterprise-level ETL design, dimensional modelling, and warehouse engineering for large-scale public safety analytics.</em>
-</p>
+## Public demonstration
 
----
+- Live app: *[CMP APP](https://crime-data-warehouse-project-werssygoztfug6fijvbfew.streamlit.app/)*
+- Streamlit entry point: `ccc_app.py`
+- ETL script: `ETL_Process_Crime.R`
+- Warehouse SQL: `Crime_df_warehouse_code.sql`
 
-# 📌 Project Overview
+The deployment is an analytical demonstration. It does not provide operational policing recommendations or establish causal relationships between police staffing and crime.
 
-This project implements a **Crime Analytics Data Warehouse** using R for ETL and PostgreSQL for storage.  
-The system ingests **over 2.2 million UK crime records**, enriches them with **police force strength data**, validates quality, and produces **clean staging data** for a Kimball-style warehouse schema.
+## Data provenance
 
-The final dataset powers analytics on:
+The project description reports more than 2.2 million UK crime records enriched with police workforce information.
 
-- Crime distribution by geography  
-- Crime type trends over time  
-- Crime outcomes and resolution rates  
-- Relationship between crime and police staffing  
+> **[ACTION REQUIRED]** Add the exact source URLs, publishers, date ranges, download dates and licences for both the crime records and police-strength data. Confirm whether raw files may be redistributed. If not, remove them and provide acquisition instructions or scripts.
 
----
-Personal Contribution & Responsibilities
----
-- System Architecture & Data Pipeline Design
-- ETL Pipeline Development (R)
-- Data Quality & Governance
-- Database & Data Warehouse Implementation
-- Analytics & BI Layer
+The repository’s MIT licence applies to original code only. It does not relicense public-sector datasets or third-party assets.
 
+## Architecture
 
----
-## 📦 End-to-End Crime Analytics Pipeline (ETL → Data Warehouse )
+```text
+Monthly crime files + police-strength data
+                    |
+                    v
+R ETL: ingestion, validation, cleaning, date standardisation and enrichment
+                    |
+                    v
+PostgreSQL staging table
+                    |
+                    v
+Kimball-style dimensions and fact tables
+                    |
+                    v
+SQL analytics and Streamlit visualisation
+```
 
----
+## Technical components
 
-             ┌────────────────────────────────────┐
-             │      Raw Crime Data Files          │
-             │  (Monthly CSVs from data portal)   │
-             └───────────────────┬────────────────┘
-                                 │
-                                 ▼
-             ┌────────────────────────────────────┐
-             │     R ETL Pipeline (crime_df)      │
-             │  - File ingestion & merging        │
-             │  - Data cleaning & NA handling     │
-             │  - Business rules (behavioural)    │
-             │  - Date parsing (YYYY-MM)          │
-             │  - Join with Police Strength data  │
-             └───────────────────┬────────────────┘
-                                 │
-                                 ▼
-             ┌────────────────────────────────────┐
-             │     PostgreSQL Staging Table       │
-             │              crime_df              │
-             │  - Clean, enriched crime records   │
-             │  - Ready for dimensional loading   │
-             └───────────────────┬────────────────┘
-                                 │
-                                 ▼
-             ┌────────────────────────────────────┐
-             │   Data Warehouse (Star Schema)     │
-             │  - dim_crime_type                  │
-             │  - dim_lsoaname                    │
-             │  - dim_location                    │
-             │  - dim_outcome                     │
-             │  - dim_date                        │
-             │  - fact_crime_num                  │
-             │  - fact_crime_count                │
-             │  - fact_crime_resolution           │
-             │  - fact_occuring_time              │
-             └───────────────────┬────────────────┘
-                                 │
-                                 ▼
-             ┌────────────────────────────────────┐
-             │   BI & Analytics Layer             │
-             │  - Streamlit app / SQL reporting   │
-             │  - Crime trend analysis            │
-             │  - Hotspot & outcome insights      │
-             │  - Staffing vs crime correlations  │
-             └────────────────────────────────────┘
----
+### ETL
 
-## 🧹 Crime Analytics ETL Pipeline (R)
+`ETL_Process_Crime.R` combines monthly files, standardises fields, handles missing data, derives date attributes and joins contextual police-strength data.
 
-This project includes an R-based **ETL pipeline** that prepares UK crime data for loading into the Crime Data Warehouse.
+### Warehouse
 
-Raw data from multiple monthly CSV files and a secondary police strength dataset are:
+`Crime_df_warehouse_code.sql` builds analytical dimensions and facts for crime type, geography, location, outcomes and time-based reporting.
 
-### 🔄 Extracted
-- All monthly crime CSV files are read from a folder using a custom `merge_csv_files()` function (`data.table::fread` + `rbindlist`).  
-- Police force strength data is loaded from a separate CSV file and standardised.
+### Application
 
-### 🧪 Transformed
-The script performs several transformation and data quality steps:
+`ccc_app.py` exposes selected analytical outputs through a browser-based Streamlit interface.
 
-- **Column selection & renaming** – keep only relevant fields such as `Crime ID`, `Month`, `LSOA code`, `LSOA name`, `Location`, `Crime type`, and `Last outcome category`, then rename them to analysis-friendly names (`Crime_type`, `LSOA_name`, `Last_outcome_category`, etc.).
-- **Missing value handling** – remove records with missing longitude and latitude, and inspect NA counts across all variables.
-- **Business rule application** – map `Crime type = "Anti-social behaviour"` to a clearer outcome label `"Behavioral issues"`.
-- **Date standardisation** – convert `Month` to `Date` in `"YYYY-MM"` format, with derived `Year` and `Month` fields.
-- **Geospatial & contextual enrichment** – join crime data with `Police_Force_Strength` (police officer, staff and PCSO strength) on the standardised `Date` field.
+## Run locally
 
-The final transformed dataset is saved as `Crime_df`.
+### 1. Prepare the environment
 
-### 🗄 Loaded
-The curated `Crime_df` table is then:
+- Install R and the packages documented in the ETL script.
+- Install PostgreSQL.
+- Install Python 3.10 or later for the Streamlit layer.
 
-- Loaded into **PostgreSQL** using `DBI` + `RPostgres` as a staging table:
+### 2. Configure data sources
 
----
+Create local input and output paths. Do not commit machine-specific paths or database credentials.
 
-## 🏛 Crime Analytics Data Warehouse (SQL)
+> **[ACTION REQUIRED]** Refactor any hard-coded file paths and credentials into environment variables or an ignored configuration file. Add a `.env.example` containing names only, never secrets.
 
-This project implements a Kimball-style **data warehouse** for UK crime data using SQL.
+### 3. Run the ETL
 
-Source data from a staging table (`Crime_df`) is transformed into:
+```bash
+Rscript ETL_Process_Crime.R
+```
 
-### 🔹 Dimension Tables
-- `dim_crime_type` – types of crime (e.g. burglary, robbery, violence)  
-- `dim_lsoaname` – LSOA names and codes for geographic analysis  
-- `dim_Location` – free-text location descriptions  
-- `dim_Outcome` – last outcome category (e.g. "Under investigation", "No further action")  
-- `dim_date` – full calendar date dimension (day, month, quarter, year, year_month)
+### 4. Build the warehouse
 
-### 🔹 Fact Tables
-Each fact table represents a different analytical “lens” on crime:
+Run `Crime_df_warehouse_code.sql` against a development PostgreSQL database after reviewing its schema and connection assumptions.
 
-- `fact_Crime_Num` – number of crimes by date, area, location, type and police strength  
-- `fact_Crime_Count` – alternative crime count grain by date, LSOA, location and type  
-- `fact_Resolution` – number of resolved crimes by outcome and crime type  
-- `fact_occurring_Time` – crime counts by day of week and location
+### 5. Run the application
 
-All fact tables use **foreign keys** back to the dimension tables (`dim_crime_type`, `dim_lsoaname`, `dim_Location`, `dim_date`, `dim_Outcome`), forming a classic star schema.
+```bash
+python -m venv .venv
+pip install -r requirements.txt
+streamlit run ccc_app.py
+```
 
----
+> **[ACTION REQUIRED]** Generate and test the R dependency manifest and Python `requirements.txt` from a clean environment.
 
-**ERP Diagram**
+## Reproducibility checks
 
-![](Crime_df_WH.jpg)
+- Record the source-data date range and row counts before and after each transformation.
+- Log rejected or incomplete rows without exposing sensitive values.
+- Validate primary/foreign-key expectations before loading facts.
+- Add tests for date parsing, categorisation and duplicate handling.
+- Document the grain of every fact table.
 
----
-### Deployment Using Streamlit
----
+## Intended use and limitations
 
-### Web Application Features:
+- Educational and portfolio demonstration of ETL, dimensional modelling and public-data analytics.
+- Aggregated patterns do not establish causation.
+- Police-strength comparisons may be affected by population, reporting, deployment and geographic differences.
+- Geographic and outcome fields inherit limitations from the source datasets.
+- Do not use the application to identify or profile individuals.
 
-  ###  **Web Development**
-    The web application was developed using Python within Visual Studio Code, enabling rapid iteration, 
-    debugging, and version control during the development process.
-  
-  ###  **Core Libraries and Frameworks**
-    - Streamlit - for building and deploying an interactive web-based analytics interface
-    - Pandas & NumPy - for data manipulation and numerical computation
-    - Plotly - for data visualisation
-    
-  ###  **Deployment Platform**
-    - The application was deployed using Streamlit, allowing the analytics platform to be accessed through a 
-      lightweight, browser-based interface without requiring complex infrastructure.
-    - Streamlit was selected for deployment due to its suitability for rapid prototyping of data-driven applications 
-      and its ability to make analytical insights accessible to non-technical users.
+## Contributing
 
----
-**BI Solution (App deployment)**
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions should preserve data provenance, reproducibility and privacy.
 
----
+## Security and privacy
 
-**CMP_App** *[CMP_App](https://crime-data-warehouse-project-werssygoztfug6fijvbfew.streamlit.app)*
+See [SECURITY.md](SECURITY.md). Never commit database passwords, connection strings, private records or precise personal identifiers.
 
----
+## Citation
 
-🔍 **Key Insights**
+Citation metadata is provided in [CITATION.cff](CITATION.cff).
 
----
+## Licence
 
-📊 **Crime Distribution & *Geographic Hotspots**
----
-![](COD.jpg)
-
-### Insight
-    - Crime is highly concentrated, with a small number of LSOAs and locations accounting for the majority of incidents.
-    - Violence & sexual offences and anti-social behaviour consistently represent the largest share of total crime.
-    - Crime is geographically clustered, not evenly distributed.
-    - Persistent hotspots remain active across multiple periods, suggesting structural or environmental drivers 
-      rather than short-term anomalies.
-
----
-⏱️ **Time Patterns**
----
-![](CTPD.jpg)
-
-### Insight
-    - Crime levels show clear monthly seasonality, with recurring peaks and troughs across years.
-    - Temporal patterns are stable, indicating predictable demand cycles rather than random fluctuations.
-
----
-👮 **Police Strength vs Crime**
----
-![](CVPSD.jpg)
-
-### Insight
-    - Higher police strength does not automatically result in lower crime volumes.
-    - Several high-crime areas already have relatively strong officer presence, indicating reactive 
-      deployment and diminishing returns at higher staffing levels.
-    - Workforce levels appear broadly stable while crime fluctuates, suggesting non-workforce drivers of crime.
-
----
-✅ **Crime Resolution**
----
-![](ROTM.jpg)
-
-### Insight
-    - Resolution success varies significantly by crime type.
-    - A small number of outcome categories account for most resolved cases.
-    - Some crime types show persistently low resolution volumes, highlighting investigative 
-      challenges and prioritisation gaps.
-
----
-📈 **Strategic Implications**
----
-
-- Targeted hotspot interventions are likely to be more effective than uniform resource increases.
-- Time-based deployment planning can better align resources with predictable crime cycles.
-- Performance improvements are more likely through focused investigation strategies than blanket workforce expansion.
-
-
-
-
-
-
-
-
-
+Original code is available under the [MIT License](LICENSE). Source datasets and third-party assets remain governed by their original terms.
