@@ -102,9 +102,20 @@ SQL analytics and Streamlit visualisation
 
 ### 2. Configure data sources
 
-Create local input and output paths. Do not commit machine-specific paths or database credentials.
 
-> **[ACTION REQUIRED]** Refactor any hard-coded file paths and credentials into environment variables or an ignored configuration file. Add a `.env.example` containing names only, never secrets.
+The ETL reads local file locations and PostgreSQL connection settings from environment variables. Copy `.env.example` and configure the values for your local environment.
+
+Required variables:
+
+```text
+CRIME_DATA_DIR
+POLICE_DATA_FILE
+DB_NAME
+DB_HOST
+DB_PORT
+DB_USER
+DB_PASSWORD
+```
 
 ### 3. Run the ETL
 
