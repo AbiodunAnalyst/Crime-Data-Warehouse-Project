@@ -135,7 +135,15 @@ pip install -r requirements.txt
 streamlit run ccc_app.py
 ```
 
-> **[ACTION REQUIRED]** Generate and test the R dependency manifest and Python `requirements.txt` from a clean environment.
+### Dependencies
+
+The Streamlit application dependencies are declared in `requirements.txt`:
+
+```text
+streamlit
+pandas
+plotly
+```
 
 ## Reproducibility checks
 
