@@ -231,19 +231,18 @@ with tab_cc:
                         map_df,
                         lat="latitude",
                         lon="longitude",
-                        size="crime_count",
-                        zoom=5,
-                        height=500,
-                        map_style="open-street-map"
+                        size="number_of_crime",
+                        hover_name="location",
+                        hover_data={"number_of_crime": True, "latitude": False, "longitude": False},
+                        zoom=9,
                     )
-                
                     fig_map.update_layout(
-                        margin=dict(l=0, r=0, t=0, b=0)
+                        map_style="open-street-map",
+                        margin=dict(l=0, r=0, t=0, b=0),
                     )
-                
-                    st.plotly_chart(fig_map, width="stretch")
+                    st.plotly_chart(fig_map, use_container_width=True, key="cc_map")
                 else:
-                    st.warning("No valid location coordinates are available.")
+                    st.info("No valid coordinates to display on the map for current filters.")
 # ============================================================
 #  TAB 2 – CRIME VOLUME & POLICE STRENGTH (fact_crime_num)
 # ============================================================
