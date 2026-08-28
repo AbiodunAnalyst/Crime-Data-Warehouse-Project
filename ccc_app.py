@@ -226,7 +226,7 @@ with tab_cc:
                     .dropna(subset=["longitude", "latitude"])
                 )
                 if not map_df.empty:
-                    fig_map = px.scatter_mapbox(
+                    fig_map = px.scatter_map(
                         map_df,
                         lat="latitude",
                         lon="longitude",
@@ -236,7 +236,7 @@ with tab_cc:
                         zoom=9,
                     )
                     fig_map.update_layout(
-                        mapbox_style="open-street-map",
+                        map_style="open-street-map",
                         margin=dict(l=0, r=0, t=0, b=0),
                     )
                     st.plotly_chart(fig_map, use_container_width=True, key="cc_map")
