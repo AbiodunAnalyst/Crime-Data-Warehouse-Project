@@ -25,7 +25,7 @@ SELECT
 FROM generate_series(2020, 2025) AS y
 CROSS JOIN generate_series(1, 12) AS m;
 
-..................................................................................
+.................................................................................
     
 
 CREATE TABLE dim_outcome (
@@ -40,7 +40,7 @@ FROM crime_df
 WHERE "Last_outcome_category" IS NOT NULL
   AND trim("Last_outcome_category") <> '';
 
-....................................................................................................
+...................................................................................................
 
     
 CREATE TABLE dim_location (
@@ -54,7 +54,7 @@ SELECT DISTINCT
 FROM crime_df
 WHERE "Location" IS NOT NULL AND trim("Location") <> '';
 
-................................................................................................
+...............................................................................................
     
 CREATE TABLE dim_lsoaname (
     lsoa_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
