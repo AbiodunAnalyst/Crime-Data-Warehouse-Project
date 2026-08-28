@@ -225,36 +225,38 @@ with tab_cc:
                     .sum()
                     .dropna(subset=["longitude", "latitude"])
                 )
-                map_df = filtered_df.copy()
-
-                map_df["latitude"] = pd.to_numeric(map_df["latitude"], errors="coerce")
-                map_df["longitude"] = pd.to_numeric(map_df["longitude"], errors="coerce")
+                map_df["latitude"] = pd.to_numeric(
+                    map_df["latitude"], errors="coerce"
+                )
+                map_df["longitude"] = pd.to_numeric(
+                    map_df["longitude"], errors="coerce"
+                )
                 
                 map_df = map_df.dropna(subset=["latitude", "longitude"])
                 
-                # Keep only valid UK coordinates
                 map_df = map_df[
                     map_df["latitude"].between(49, 61)
                     & map_df["longitude"].between(-9, 3)
                 ]
-
+                
                 if not map_df.empty:
                     fig_map = px.scatter_map(
                         map_df,
                         lat="latitude",
                         lon="longitude",
-                        hover_name="location",
+                        size="crime_count",
                         zoom=5,
                         height=500,
                         map_style="open-street-map"
                     )
                 
-                    fig_map.update_traces(marker=dict(size=10, color="red"))
-                    fig_map.update_layout(margin=dict(l=0, r=0, t=0, b=0))
+                    fig_map.update_layout(
+                        margin=dict(l=0, r=0, t=0, b=0)
+                    )
                 
                     st.plotly_chart(fig_map, width="stretch")
                 else:
-                    st.warning("No valid latitude and longitude values are available.") 
+                    st.warning("No valid location coordinates are available.")
 # ============================================================
 #  TAB 2 – CRIME VOLUME & POLICE STRENGTH (fact_crime_num)
 # ============================================================
