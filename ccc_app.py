@@ -225,19 +225,6 @@ with tab_cc:
                     .sum()
                     .dropna(subset=["longitude", "latitude"])
                 )
-                map_df["latitude"] = pd.to_numeric(
-                    map_df["latitude"], errors="coerce"
-                )
-                map_df["longitude"] = pd.to_numeric(
-                    map_df["longitude"], errors="coerce"
-                )
-                
-                map_df = map_df.dropna(subset=["latitude", "longitude"])
-                
-                map_df = map_df[
-                    map_df["latitude"].between(49, 61)
-                    & map_df["longitude"].between(-9, 3)
-                ]
                 
                 if not map_df.empty:
                     fig_map = px.scatter_map(
