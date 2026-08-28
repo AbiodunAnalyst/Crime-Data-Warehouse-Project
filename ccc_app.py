@@ -238,7 +238,7 @@ with tab_cc:
                     & map_df["longitude"].between(-9, 3)
                 ]
 
-               if not map_df.empty:
+                if not map_df.empty:
                     fig_map = px.scatter_map(
                         map_df,
                         lat="latitude",
@@ -251,9 +251,9 @@ with tab_cc:
                 
                     fig_map.update_traces(marker=dict(size=10, color="red"))
                     fig_map.update_layout(margin=dict(l=0, r=0, t=0, b=0))
-            
+                
                     st.plotly_chart(fig_map, width="stretch")
-              else:
+                else:
                     st.warning("No valid latitude and longitude values are available.") 
 # ============================================================
 #  TAB 2 – CRIME VOLUME & POLICE STRENGTH (fact_crime_num)
