@@ -218,31 +218,88 @@ with tab_cc:
 
             with col4:
                 st.subheader("Crime Locations Map")
+            
+                # Select and clean the map data before grouping
+                map_source = filtered_cc[
+                    ["location", "longitude", "latitude", "number_of_crime"]
+                ].copy()
+            
+                map_source["latitude"] = pd.to_numeric(
+                    map_source["latitude"], errors="coerce"
+                )
+                map_source["longitude"] = pd.to_numeric(
+                    map_source["longitude"], errors="coerce"
+                )
+                map_source["number_of_crime"] = pd.to_numeric(
+                    map_source["number_of_crime"], errors="coerce"
+                ).fillna(0)
+            
+                # Remove missing and invalid coordinates
+                map_source = map_source.dropna(
+                    subset=["latitude", "longitude"]
+                )
+            
+                # Keep coordinates within the approximate UK boundary
+                map_source = map_source[
+                    map_source["latitude"].between(49, 61)
+                    & map_source["longitude"].between(-9, 3)
+                ]
+            
+                # Aggregate crimes occurring at the same location
                 map_df = (
-                    filtered_cc.groupby(
-                        ["location", "longitude", "latitude"], as_index=False
+                    map_source.groupby(
+                        ["location", "longitude", "latitude"],
+                        as_index=False,
+                        dropna=False
                     )["number_of_crime"]
                     .sum()
-                    .dropna(subset=["longitude", "latitude"])
                 )
-                
+            
                 if not map_df.empty:
+                    map_centre = {
+                        "lat": map_df["latitude"].mean(),
+                        "lon": map_df["longitude"].mean()
+                    }
+            
                     fig_map = px.scatter_map(
                         map_df,
                         lat="latitude",
                         lon="longitude",
-                        size="number_of_crime",
                         hover_name="location",
-                        hover_data={"number_of_crime": True, "latitude": False, "longitude": False},
-                        zoom=9,
+                        hover_data={
+                            "number_of_crime": True,
+                            "latitude": False,
+                            "longitude": False
+                        },
+                        center=map_centre,
+                        zoom=7,
+                        height=500,
+                        map_style="open-street-map"
                     )
+            
+                    # Use a fixed marker size first to ensure markers remain visible
+                    fig_map.update_traces(
+                        marker={
+                            "size": 12,
+                            "color": "red",
+                            "opacity": 0.75
+                        }
+                    )
+            
                     fig_map.update_layout(
-                        map_style="open-street-map",
-                        margin=dict(l=0, r=0, t=0, b=0),
+                        margin={"l": 0, "r": 0, "t": 0, "b": 0}
                     )
-                    st.plotly_chart(fig_map, use_container_width=True, key="cc_map")
+            
+                    st.plotly_chart(
+                        fig_map,
+                        width="stretch",
+                        key="cc_map"
+                    )
                 else:
-                    st.info("No valid coordinates to display on the map for current filters.")
+                    st.warning(
+                        "No valid UK latitude and longitude coordinates "
+                        "are available for the selected filters."
+                    )
 # ============================================================
 #  TAB 2 – CRIME VOLUME & POLICE STRENGTH (fact_crime_num)
 # ============================================================
